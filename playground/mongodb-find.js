@@ -8,7 +8,7 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db) => {
 
   // Search for Todos by ObjectID  
   db.collection('Todos').find({
-      _id: ObjectID('59b28fe1d607e72e1c327e57')
+      _id: new ObjectID('59b28fe1d607e72e1c327e57')
     }).toArray()
     .then((docs) => {
       console.log('Todos');
