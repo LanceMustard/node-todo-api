@@ -14,7 +14,7 @@ describe('POST /todos', () => {
     var text = 'Test todo text';
 
     request(app)
-      .post('/todo')
+      .post('/todos')
       .send({text})
       .expect(200)
       .expect((res) => {
@@ -29,8 +29,24 @@ describe('POST /todos', () => {
           expect(todos.length).toBe(1);     // check that we have 1 record/document in the database
           expect(todos[0].text).toBe(text); // check that the text matches what we expect
           done();                           // test complete
-        }).catch((err) => { done(err)});    // raise any errors
-      })
-      
+        }).catch((err) => done(err));       // raise any errors
+      });
+  });
+
+  it('should not create a todo with invalid body data', (done) => {
+    request(app)
+      .post('/todos')
+      .send({})                             // blank todo should fail save validation
+      .expect(400)                          // this is a bad request  
+      .end((err, res) => {
+        if (err) {
+          return done(err);                 // raise error
+        }
+
+        Todo.find().then((todos) => {
+          expect(todos.length).toBe(0);     // check that we have 0 records/documents in the database
+          done();                           // test complete
+        }).catch((err) => done(err));       // raise any errors
+      });
   });
 });
