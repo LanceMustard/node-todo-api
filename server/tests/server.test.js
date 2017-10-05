@@ -115,7 +115,6 @@ describe('DELETE /todos/:id', () => {
         }
         // check that out object is no longer in the database
         Todo.findById(hexId).then((todo) => {
-          //expect(todo).toNotExist();
           expect(todo).toBeFalsy();
           done();                           // test complete
         }).catch((err) => done(err));       // raise any errors
