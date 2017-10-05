@@ -48,7 +48,7 @@ describe('POST /todos', () => {
     request(app)
       .post('/todos')
       .send({})                             // blank todo should fail save validation
-      .expect(400)                          // this is a bad request  
+      .expect(400)                          // this is a bad request
       .end((err, res) => {
         if (err) {
           return done(err);                 // raise error
@@ -95,6 +95,43 @@ describe('GET /todos/:id', () => {
   it ('should return 404 for non-object ids', (done) => {
     request(app)
     .get(`/todos/123`)
+    .expect(404)
+    .end(done);
+  });
+});
+
+describe('DELETE /todos/:id', () => {
+  it('should delete a single todo', (done) => {
+    var hexId = todos[0]._id.toHexString();
+    request(app)
+      .delete(`/todos/${hexId}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo._id).toBe(hexId); // check the return deleted object matched the one we wanted to delete
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);                 // raise error
+        }
+        // check that out object is no longer in the database
+        Todo.findById(hexId).then((todo) => {
+          //expect(todo).toNotExist();
+          expect(todo).toBeFalsy();
+          done();                           // test complete
+        }).catch((err) => done(err));       // raise any errors
+      });
+  });
+
+  it ('should return 404 if todo not found', (done) => {
+    request(app)
+      .delete(`/todos/${new ObjectID().toHexString()}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it ('should return 404 for non-object ids', (done) => {
+    request(app)
+    .delete(`/todos/123`)
     .expect(404)
     .end(done);
   });
