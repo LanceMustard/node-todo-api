@@ -74,7 +74,7 @@ app.patch('/todos/:id', (req, res) => {
     return res.status(404).send('Not a valid ID');
   }
 
-  if (_.isBoolean(body.completed)) {
+  if (_.isBoolean(body.completed)  && body.completed) {
     body.completedAt = new Date().getTime();
   }
   else {
