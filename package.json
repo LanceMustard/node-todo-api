@@ -18,7 +18,8 @@
     "express": "^4.15.4",
     "lodash": "^4.17.4",
     "mongodb": "^2.2.31",
-    "mongoose": "^4.12.0"
+    "mongoose": "^4.12.0",
+    "validator": "^9.0.0"
   },
   "devDependencies": {
     "expect": "^21.2.1",

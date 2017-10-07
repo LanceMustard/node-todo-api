@@ -67,6 +67,7 @@ app.delete('/todos/:id', (req, res) => {
   });
 });
 
+// Update a Todo record
 app.patch('/todos/:id', (req, res) => {
   var id = req.params.id;
   var body = _.pick(req.body, ['text', 'completed']);
@@ -90,6 +91,26 @@ app.patch('/todos/:id', (req, res) => {
     res.send({todo});
   }).catch((e) => {
     res.status(400).send();
+  });
+});
+
+// Create new User record
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
+  user.save().then((doc) => {
+    res.send(doc);
+  }, (err) => {
+    res.status(400).send(err);
+  });
+});
+
+// Return all User records
+app.get('/users', (req, res) => {
+  User.find().then((users) => {
+    res.send({users});
+  }, (err) => {
+    res.status(400).send(err);
   });
 });
 
