@@ -3,18 +3,12 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 
-// var emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-// var validateEmail = function(email) {
-//   return emailRegex.test(email);
-// };
-
 var UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
     minlength: 1,
     trim: true,
-    // validate: validateEmail,
     validate: {
       isAsync: false,
       validator: validator.isEmail,
@@ -56,6 +50,25 @@ UserSchema.methods.toJSON = function () {
   var userObject = user.toObject();
 
   return _.pick(userObject, ['_id', 'email']);
+};
+
+UserSchema.statics.findByToken = function(token) {
+  var User = this;
+  var decoded;
+  try {
+    decoded = jwt.verify(token, 'abc123');
+  } catch (err) {
+    return Promise.reject();
+    // return new Promise((resolve, reject) => {
+    //   reject();
+    // });
+  }
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  });
+  
 };
 
 var User = mongoose.model('User', UserSchema);
