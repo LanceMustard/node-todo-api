@@ -13,6 +13,10 @@ var app = express();
 
 app.use(bodyParser.json());
 
+/*-----------------------------------------------------------------------------
+ ToDos
+-----------------------------------------------------------------------------*/
+
 // Create new Todo record
 app.post('/todos', (req, res) => {
   var todo = new Todo({
@@ -20,7 +24,7 @@ app.post('/todos', (req, res) => {
   });
   todo.save().then((doc) => {
     res.send(doc);
-  }, (err) => {
+  }).catch((err) => {
     res.status(400).send(err);
   });
 });
@@ -30,7 +34,7 @@ app.post('/todos', (req, res) => {
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     res.send({todos});
-  }, (err) => {
+  }).catch((err) => {
     res.status(400).send(err);
   });
 });
@@ -89,18 +93,24 @@ app.patch('/todos/:id', (req, res) => {
       return res.status(404).send();
     }
     res.send({todo});
-  }).catch((e) => {
-    res.status(400).send();
+  }).catch((err) => {
+    res.status(400).send(err);
   });
 });
+
+/*-----------------------------------------------------------------------------
+ Users
+-----------------------------------------------------------------------------*/
 
 // Create new User record
 app.post('/users', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   var user = new User(body);
-  user.save().then((doc) => {
-    res.send(doc);
-  }, (err) => {
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((err) => {
     res.status(400).send(err);
   });
 });
@@ -109,10 +119,14 @@ app.post('/users', (req, res) => {
 app.get('/users', (req, res) => {
   User.find().then((users) => {
     res.send({users});
-  }, (err) => {
+  }).catch((err) => {
     res.status(400).send(err);
   });
 });
+
+/*-----------------------------------------------------------------------------
+ Listen
+-----------------------------------------------------------------------------*/
 
 app.listen(port, () => {
   console.log(`Started on port ${port}`);
